@@ -36,6 +36,7 @@
 
   <script>
     // Add your JavaScript here
+    
     document.getElementById('userForm').addEventListener('submit', async function(event) {
       event.preventDefault();
 
@@ -54,11 +55,15 @@
         const data = await response.json();
         console.log('User added:', data);
 
-        // Optionally, you can redirect or show a success message here
-      } catch (error) {
-        console.error('Error adding user:', error.message);
-      }
-    });
+           // Optionally, provide feedback to the user
+    document.getElementById('userForm').reset(); // Clear the form
+    alert('User added successfully!');
+  } catch (error) {
+    console.error('Error adding user:', error.message);
+    // Optionally, provide feedback to the user
+    alert('Error adding user. Please try again.');
+  }
+});
   </script>
 
 </body>

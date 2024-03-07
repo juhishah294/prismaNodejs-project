@@ -1,6 +1,7 @@
 const express = require("express");
 const { PrismaClient } = require("@prisma/client");
 const cors = require("cors"); // Add CORS middleware
+const path = require("path");
 
 const prisma = new PrismaClient();
 const app = express();
@@ -8,6 +9,13 @@ const port = 3000;
 
 app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
+
+app.use(express.static(path.join(__dirname, "public")));
+
+// Serve the HTML file at the root path
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 app.post("/users", async (req, res) => {
   const { username, email } = req.body;

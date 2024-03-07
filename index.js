@@ -1,26 +1,50 @@
+const express = require("express");
 const { PrismaClient } = require("@prisma/client");
+const cors = require("cors"); // Add CORS middleware
+
 const prisma = new PrismaClient();
+const app = express();
+const port = 3000;
 
-async function main() {
-  // Create multiple users
-  const users = await prisma.user.createMany({
-    data: [
-      { name: "Juhi", email: "juhi@example.com" },
-      { name: "Alice", email: "alice@example.com" },
-      { name: "Bob", email: "bob@example.com" },
-      { name: "Charlie", email: "charlie@example.com" },
-    ],
-    // Set `skipDuplicates` to true to skip inserting duplicate records
-    skipDuplicates: true,
-  });
+app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
 
-  console.log("New users created:", users);
-}
+app.post("/users", async (req, res) => {
+  const { username, email } = req.body;
 
-main()
-  .catch((e) => {
-    throw e;
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  try {
+    // Save user to the database
+    const newUser = await prisma.user.create({
+      data: {
+        username,
+        email,
+        name: username,
+      },
+    });
+
+    console.log("New user created:", newUser);
+
+    // Respond with the newly created user
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error("Error adding user:", error.message);
+
+    // Respond with an error message
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// GET route to retrieve all users
+app.get("/users", async (req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.json(users);
+  } catch (error) {
+    console.error("Error retrieving users:", error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});

@@ -6,6 +6,6 @@ WORKDIR /opt/server/backend-test
 
 COPY . .
 
-RUN npm install
+RUN npm install 
 EXPOSE 3000
 CMD [ "node", "server.js" ]
